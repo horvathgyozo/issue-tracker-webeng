@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html layout:decorator="layouts/common">
+    <head>
+        <title>Content page</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <h2 class="display-2 my-3">My issues</h2>
+            <p><a class="btn btn-primary" href="#" th:href="@{/issues/new}" role="button">New issue</a></p>
+            <div class="list-group">
+
+                <a th:each="issue : ${issues}" th:href="@{/issues/{id}(id=${issue.id})}" 
+                   class="list-group-item list-group-item-action" th:classappend="${'list-group-item-' + (issue.status.name() == 'NEW' ? 'danger' : (issue.status.name() == 'DOING' ? 'warning' : 'success')) }">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <h5 class="mb-1" th:text="${issue.title}">Bad machine</h5>
+                        <span class="badge" th:text="${issue.status}"
+                              th:classappend="${'badge-' + (issue.status.name() == 'NEW' ? 'danger' : (issue.status.name() == 'DOING' ? 'warning' : 'success')) }"
+                        >NEW</span>
+                    </div>
+                    <p class="mb-1" th:text="${issue.description}">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+                    <small>
+                        <i class="fas fa-map-marker-alt"></i> <span th:text="${issue.place}">PC1</span> 
+                        <i class="fas fa-calendar-alt"></i> <span th:text="${#temporals.format(issue.created_at, 'dd-MM-yyyy')}">2019.01.01.</span> 
+                        <i class="fas fa-comment"></i> <span class="badge badge-light badge-pill" th:text="${issue.count}">3</span>
+                    </small>
+                </a>
+
+            </div>
+        </div>
+    </body>
+</html>
