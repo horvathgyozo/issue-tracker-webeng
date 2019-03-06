@@ -2,6 +2,7 @@ package hu.elte.IssueTracker.entities;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -65,12 +68,11 @@ public class Issue {
     @OneToMany(mappedBy = "issue")
     private List<Message> messages;
     
-//    @ManyToMany
-//    @JoinTable
-//    private List<Label> labels;
-//    
+    @ManyToMany
+    @JoinTable
+    private List<Label> labels;
+    
 //    @ManyToOne
 //    @JoinColumn
-//    @JsonIgnore
 //    private User user;
 }

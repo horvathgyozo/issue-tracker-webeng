@@ -15,7 +15,7 @@ public class IssueListDTO extends Issue {
     private long count;
     
     public IssueListDTO(Integer id, String title, String description, String place, Issue.Status status, LocalDateTime created_at, LocalDateTime updated_at, long count) {
-        super(id, title, description, place, status, created_at, updated_at, null);
+        super(id, title, description, place, status, created_at, updated_at, null, null);
         this.count = count;
     }
 }
