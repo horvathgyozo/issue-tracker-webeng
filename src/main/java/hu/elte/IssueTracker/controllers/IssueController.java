@@ -31,7 +31,7 @@ public class IssueController {
 
     @Autowired
     private MessageRepository messageRepository;
-    
+
     @Autowired
     private LabelRepository labelRepository;
 
@@ -59,13 +59,24 @@ public class IssueController {
     public String addForm(Model model) {
         model.addAttribute("issue", new Issue());
         model.addAttribute("allLabels", labelRepository.findAll());
+        model.addAttribute("issueLabels", new ArrayList<Integer>());
+
         return "issue-form";
     }
 
     @PostMapping("/new")
-    public String addIssue(@Valid Issue issue, BindingResult bindingResult) {
+    public String addIssue(@Valid Issue issue, BindingResult bindingResult,
+            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allLabels", labelRepository.findAll());
+            model.addAttribute("issueLabels", labels);
             return "issue-form";
+        }
+
+        for (int i : labels) {
+            Label l = new Label();
+            l.setId(i);
+            issue.getLabels().add(l);
         }
 
         issueRepository.save(issue);
@@ -78,8 +89,8 @@ public class IssueController {
         if (oIssue.isPresent()) {
             model.addAttribute("issue", oIssue.get());
             model.addAttribute("allLabels", labelRepository.findAll());
-            
-            List<Integer> issueLabels = new ArrayList<Integer>();
+
+            List<Integer> issueLabels = new ArrayList<>();
             for (Label l : oIssue.get().getLabels()) {
                 issueLabels.add(l.getId());
             }
@@ -92,18 +103,22 @@ public class IssueController {
     }
 
     @PostMapping("/{id}/edit")
-    public String editIssue(@PathVariable Integer id, @Valid Issue issue, BindingResult bindingResult, 
-            @RequestParam(value = "labels" , required = false) int[] labels) {
+    public String editIssue(@PathVariable Integer id, @Valid Issue issue, BindingResult bindingResult,
+            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("allLabels", labelRepository.findAll());
+            model.addAttribute("issueLabels", labels);
             return "issue-form";
         }
-        
+
 //        issue.getLabels().removeIf(l -> l.getId() == null);
-        for (int i : labels) {
+        labels.stream().map((i) -> {
             Label l = new Label();
             l.setId(i);
+            return l;
+        }).forEachOrdered((l) -> {
             issue.getLabels().add(l);
-        }
+        });
         issueRepository.save(issue);
         return "redirect:/issues";
     }
