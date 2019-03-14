@@ -19,3 +19,6 @@ insert into issue_labels (issues_id, labels_id) values (2, 1);
 insert into issue_labels (issues_id, labels_id) values (2, 4);
 insert into issue_labels (issues_id, labels_id) values (3, 3);
 insert into issue_labels (issues_id, labels_id) values (3, 4);
+
+insert into user (username, password, enabled, role) values ('user1', '$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..', true, 'ROLE_ADMIN');
+insert into user (username, password, enabled, role) values ('user2', '$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..', true, 'ROLE_USER'); 

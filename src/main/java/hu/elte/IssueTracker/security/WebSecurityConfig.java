@@ -7,7 +7,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -17,19 +19,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .authorizeRequests()
-                .antMatchers("/").permitAll()
+                .antMatchers("/", "/h2/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .and()
+            .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/")
+                .and()
+            .csrf()         // important!
+                .ignoringAntMatchers("/h2/**")
+                .and()
+            .headers()
+                .frameOptions().disable()  // important!
                 .and()
             .httpBasic();
     }
 
     @Autowired
+    private UserDetailsService userDetailsService;
+    
+    @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-            .withUser("user").password("$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..").roles("USER");
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+//        auth
+//            .inMemoryAuthentication()
+//            .withUser("user").password("$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..").roles("USER");
     }
 
     @Bean
