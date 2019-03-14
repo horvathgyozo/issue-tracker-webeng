@@ -3,9 +3,12 @@ package hu.elte.IssueTracker.controllers;
 import hu.elte.IssueTracker.entities.Issue;
 import hu.elte.IssueTracker.entities.Label;
 import hu.elte.IssueTracker.entities.Message;
+import hu.elte.IssueTracker.entities.User;
 import hu.elte.IssueTracker.repositories.IssueRepository;
 import hu.elte.IssueTracker.repositories.LabelRepository;
 import hu.elte.IssueTracker.repositories.MessageRepository;
+import hu.elte.IssueTracker.repositories.UserRepository;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,10 +38,19 @@ public class IssueController {
     @Autowired
     private LabelRepository labelRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    private User getUser(Principal principal) {
+        String username = principal.getName();
+        return userRepository.findByUsername(username).get();
+    }
+    
     @GetMapping("")
-    public String list(Model model) {
+    public String list(Model model, Principal principal) {
 //        model.addAttribute("issues", issueRepository.findAll());
-        model.addAttribute("issues", issueRepository.findAllIssueWithMessageCount());
+//        model.addAttribute("issues", issueRepository.findAllIssueWithMessageCount());
+        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(getUser(principal)));
         return "list";
     }
 
@@ -66,18 +78,24 @@ public class IssueController {
 
     @PostMapping("/new")
     public String addIssue(@Valid Issue issue, BindingResult bindingResult,
-            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model) {
+            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model, Principal principal) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allLabels", labelRepository.findAll());
-            model.addAttribute("issueLabels", labels);
+            model.addAttribute("issueLabels", labels == null ? new ArrayList<Integer>() : labels);
             return "issue-form";
         }
 
-        for (int i : labels) {
-            Label l = new Label();
-            l.setId(i);
-            issue.getLabels().add(l);
+        if (labels != null) {
+            for (int i : labels) {
+                Label l = new Label();
+                l.setId(i);
+                issue.getLabels().add(l);
+            }
         }
+
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username).get();
+        issue.setUser(user);
 
         issueRepository.save(issue);
         return "redirect:/issues";

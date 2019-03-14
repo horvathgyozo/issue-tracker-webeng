@@ -41,8 +41,8 @@ public class User {
         ROLE_GUEST, ROLE_USER, ROLE_ADMIN
     }
     
-//    @OneToMany(mappedBy = "user")
-//    @JsonIgnore
-//    private List<Issue> issues;
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Issue> issues;
     
 }
