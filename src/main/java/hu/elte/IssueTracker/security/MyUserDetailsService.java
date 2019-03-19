@@ -20,14 +20,17 @@ public class MyUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
+
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> oUser = userRepository.findByUsername(username);
         if (!oUser.isPresent()) {
             throw new UsernameNotFoundException(username);
         }
         User user = oUser.get();
+        authenticatedUser.setUser(user);
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 

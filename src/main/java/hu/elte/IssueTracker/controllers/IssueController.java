@@ -8,14 +8,14 @@ import hu.elte.IssueTracker.repositories.IssueRepository;
 import hu.elte.IssueTracker.repositories.LabelRepository;
 import hu.elte.IssueTracker.repositories.MessageRepository;
 import hu.elte.IssueTracker.repositories.UserRepository;
+import hu.elte.IssueTracker.security.AuthenticatedUser;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,16 +41,20 @@ public class IssueController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthenticatedUser authenticatedUser;
+
     private User getUser(Principal principal) {
         String username = principal.getName();
         return userRepository.findByUsername(username).get();
     }
-    
+
     @GetMapping("")
     public String list(Model model, Principal principal) {
 //        model.addAttribute("issues", issueRepository.findAll());
 //        model.addAttribute("issues", issueRepository.findAllIssueWithMessageCount());
         model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(getUser(principal)));
+        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(authenticatedUser.getUser()));
         return "list";
     }
 
@@ -101,6 +105,7 @@ public class IssueController {
         return "redirect:/issues";
     }
 
+    @Secured({ "ROLE_ADMIN" })
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Integer id, Model model) throws Exception {
         Optional<Issue> oIssue = issueRepository.findById(id);
