@@ -1,5 +1,5 @@
-insert into user (username, password, enabled, role) values ('user1', '$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..', true, 'ROLE_ADMIN');
-insert into user (username, password, enabled, role) values ('user2', '$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..', true, 'ROLE_USER'); 
+insert into user (username, password, enabled, role) values ('user1', 'password', true, 'ROLE_ADMIN');
+insert into user (username, password, enabled, role) values ('user2', 'password', true, 'ROLE_USER'); 
 
 insert into issue (user_id, title, description, place, status, created_at, updated_at) values (1, 'issue1', 'description1', 'place1', 'NEW', CURRENT_TIMESTAMP(),  CURRENT_TIMESTAMP());
 insert into issue (user_id, title, description, place, status, created_at, updated_at) values (1, 'issue2', 'description2', 'place2', 'DOING', CURRENT_TIMESTAMP(),  CURRENT_TIMESTAMP());

@@ -26,13 +26,18 @@
                 <dt class="col-sm-3">Description</dt>
                 <dd class="col-sm-9" th:text="${issue.description}">Some description</dd>
 
+                <dt class="col-sm-3">Labels</dt>
+                <dd class="col-sm-9">
+                    <span th:each="label : ${issue.getLabels()}" th:text="${label.text}" class="badge badge-primary">label</span>
+                </dd>
+                
                 <dt class="col-sm-3">User</dt>
-                <dd class="col-sm-9">gyozke</dd>
+                <dd class="col-sm-9" th:text="${issue.getUser().username}">gyozke</dd>
 
 
             </dl>
 
-            <p>
+            <p sec:authorize="hasRole('ROLE_ADMIN')">
                 <a class="btn btn-primary" href="#" role="button" th:href="@{/issues/{id}/edit(id=${issue.id})}">Edit</a>
                 <a class="btn btn-outline-danger" href="#" th:href="@{/issues/{id}/delete(id=${issue.id})}" role="button">Delete</a>
             </p>
@@ -52,7 +57,7 @@
             </form>
 
             <div class="list-group">
-                <div th:each="message : ${messages}" class="list-group-item">
+                <div th:each="message : ${issue.getMessages()}" class="list-group-item">
                     <div class="d-flex w-100 justify-content-between">
                         <p class="mb-1" th:text="${message.text}">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
                         <small th:text="${#temporals.format(message.created_at, 'dd-MM-yyyy')}">2019.01.01</small>

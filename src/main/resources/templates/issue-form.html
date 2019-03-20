@@ -31,7 +31,7 @@
                         Please provide a place!
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" sec:authorize="hasRole('ROLE_ADMIN')" th:if="${issue.id} != null">
                     <label for="status">Status</label>
                     <select th:field="*{status}" class="form-control" id="status" required>
                         <option value="NEW">New</option>

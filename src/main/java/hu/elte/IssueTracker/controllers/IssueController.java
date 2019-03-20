@@ -55,7 +55,10 @@ public class IssueController {
 //        model.addAttribute("issues", issueRepository.findAllIssueWithMessageCount());
 //        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(getUser(principal)));
 //        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(authenticatedUser.getUser()));
-        Iterable<Issue> issues = getUser(principal).getIssues();
+        User user = getUser(principal);
+        Iterable<Issue> issues = user.getRole() == User.Role.ROLE_USER
+                ? user.getIssues()
+                : issueRepository.findAll();
         model.addAttribute("issues", issues);
         return "list";
     }
@@ -66,7 +69,6 @@ public class IssueController {
         if (oIssue.isPresent()) {
             Issue issue = oIssue.get();
             model.addAttribute("issue", issue);
-            model.addAttribute("messages", issue.getMessages());
 //            model.addAttribute("message", new Message());
             return "issue";
         }
@@ -91,23 +93,24 @@ public class IssueController {
             return "issue-form";
         }
 
-        if (labels != null) {
-            for (int i : labels) {
-                Label l = new Label();
-                l.setId(i);
-                issue.getLabels().add(l);
-            }
-        }
+//        if (labels != null) {
+//            for (int i : labels) {
+//                Label l = new Label();
+//                l.setId(i);
+//                issue.getLabels().add(l);
+//            }
+//        }
 
         String username = principal.getName();
         User user = userRepository.findByUsername(username).get();
         issue.setUser(user);
+        issue.setStatus(Issue.Status.NEW);
 
         issueRepository.save(issue);
         return "redirect:/issues";
     }
 
-    @Secured({ "ROLE_ADMIN" })
+    @Secured({"ROLE_ADMIN"})
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Integer id, Model model) throws Exception {
         Optional<Issue> oIssue = issueRepository.findById(id);
@@ -127,6 +130,7 @@ public class IssueController {
         throw new Exception("No such issue id");
     }
 
+    @Secured({"ROLE_ADMIN"})
     @PostMapping("/{id}/edit")
     public String editIssue(@PathVariable Integer id, @Valid Issue issue, BindingResult bindingResult,
             @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model, Principal principal) {
@@ -136,15 +140,18 @@ public class IssueController {
             return "issue-form";
         }
 
-        issue.setUser(getUser(principal));
+        Issue dbIssue = issueRepository.findById(id).get();
+        issue.setUser(dbIssue.getUser());
 //        issue.getLabels().removeIf(l -> l.getId() == null);
-        labels.stream().map((i) -> {
-            Label l = new Label();
-            l.setId(i);
-            return l;
-        }).forEachOrdered((l) -> {
-            issue.getLabels().add(l);
-        });
+//        if (labels != null) {
+//            labels.stream().map((i) -> {
+//                Label l = new Label();
+//                l.setId(i);
+//                return l;
+//            }).forEachOrdered((l) -> {
+//                issue.getLabels().add(l);
+//            });
+//        }
         issueRepository.save(issue);
         return "redirect:/issues";
     }
