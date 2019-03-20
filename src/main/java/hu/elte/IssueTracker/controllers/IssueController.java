@@ -53,8 +53,10 @@ public class IssueController {
     public String list(Model model, Principal principal) {
 //        model.addAttribute("issues", issueRepository.findAll());
 //        model.addAttribute("issues", issueRepository.findAllIssueWithMessageCount());
-        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(getUser(principal)));
-        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(authenticatedUser.getUser()));
+//        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(getUser(principal)));
+//        model.addAttribute("issues", issueRepository.findAllByUserWithMessageCount(authenticatedUser.getUser()));
+        Iterable<Issue> issues = getUser(principal).getIssues();
+        model.addAttribute("issues", issues);
         return "list";
     }
 
@@ -64,7 +66,7 @@ public class IssueController {
         if (oIssue.isPresent()) {
             Issue issue = oIssue.get();
             model.addAttribute("issue", issue);
-            model.addAttribute("messages", messageRepository.findAllByIssue(issue));
+            model.addAttribute("messages", issue.getMessages());
 //            model.addAttribute("message", new Message());
             return "issue";
         }
@@ -127,13 +129,14 @@ public class IssueController {
 
     @PostMapping("/{id}/edit")
     public String editIssue(@PathVariable Integer id, @Valid Issue issue, BindingResult bindingResult,
-            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model) {
+            @RequestParam(value = "labels", required = false) ArrayList<Integer> labels, Model model, Principal principal) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("allLabels", labelRepository.findAll());
             model.addAttribute("issueLabels", labels);
             return "issue-form";
         }
 
+        issue.setUser(getUser(principal));
 //        issue.getLabels().removeIf(l -> l.getId() == null);
         labels.stream().map((i) -> {
             Label l = new Label();

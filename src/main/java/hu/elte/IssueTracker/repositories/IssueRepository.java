@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IssueRepository extends CrudRepository<Issue, Integer> {
-    public Iterable<Issue> findAllByUser(User user);
+//    public Iterable<Issue> findAllByUser(User user);
     
-    @Query("SELECT new hu.elte.IssueTracker.dtos.IssueListDTO(i.id, i.title, i.description, i.place, i.status, i.created_at, i.updated_at, count(m.id)) FROM Issue i LEFT JOIN i.messages m WHERE i.user = ?1 GROUP BY i")
-    public Iterable<Issue> findAllByUserWithMessageCount(User user);
-    
-    @Query("SELECT new hu.elte.IssueTracker.dtos.IssueListDTO(i.id, i.title, i.description, i.place, i.status, i.created_at, i.updated_at, count(m.id)) FROM Issue i LEFT JOIN i.messages m GROUP BY i")
-    List<IssueListDTO> findAllIssueWithMessageCount();
+//    @Query("SELECT new hu.elte.IssueTracker.dtos.IssueListDTO(i.id, i.title, i.description, i.place, i.status, i.created_at, i.updated_at, count(m.id)) FROM Issue i LEFT JOIN i.messages m WHERE i.user = ?1 GROUP BY i")
+//    public Iterable<Issue> findAllByUserWithMessageCount(User user);
+//    
+//    @Query("SELECT new hu.elte.IssueTracker.dtos.IssueListDTO(i.id, i.title, i.description, i.place, i.status, i.created_at, i.updated_at, count(m.id)) FROM Issue i LEFT JOIN i.messages m GROUP BY i")
+//    List<IssueListDTO> findAllIssueWithMessageCount();
 }

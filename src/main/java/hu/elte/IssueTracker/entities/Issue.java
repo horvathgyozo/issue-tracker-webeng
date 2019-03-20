@@ -67,7 +67,7 @@ public class Issue {
     @UpdateTimestamp
     private LocalDateTime updated_at;
     
-    @OneToMany(mappedBy = "issue")
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.REMOVE)
     private List<Message> messages;
     
     @ManyToMany
