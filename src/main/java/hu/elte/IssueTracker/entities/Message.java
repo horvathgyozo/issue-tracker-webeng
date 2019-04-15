@@ -45,6 +45,6 @@ public class Message {
     
     @ManyToOne
     @JoinColumn
-//    @JsonIgnore
+    @JsonIgnore
     private Issue issue;
 }

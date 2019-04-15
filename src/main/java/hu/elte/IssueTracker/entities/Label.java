@@ -1,5 +1,6 @@
 package hu.elte.IssueTracker.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -41,5 +42,6 @@ public class Label {
     private LocalDateTime updated_at;
 
     @ManyToMany(mappedBy = "labels")
+    @JsonIgnore
     private List<Issue> issues;
 }
