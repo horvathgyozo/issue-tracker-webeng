@@ -7,11 +7,14 @@ import hu.elte.IssueTracker.entities.User;
 import hu.elte.IssueTracker.repositories.IssueRepository;
 import hu.elte.IssueTracker.repositories.LabelRepository;
 import hu.elte.IssueTracker.repositories.MessageRepository;
+import hu.elte.IssueTracker.repositories.UserRepository;
 import hu.elte.IssueTracker.security.AuthenticatedUser;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,20 +39,28 @@ public class IssueRestController {
     private LabelRepository labelRepository;
     
     @Autowired
-    private AuthenticatedUser authenticatedUser;
+    private UserRepository userRepository;
     
-    @GetMapping("")
-    public ResponseEntity<Iterable<Issue>> getAll() {
-        return ResponseEntity.ok(issueRepository.findAll());
-//        User user = authenticatedUser.getUser();
-//        User.Role role = user.getRole();
-//        if (role.equals(User.Role.ROLE_ADMIN)) {
-//            return ResponseEntity.ok(issueRepository.findAll());
-//        } else {
-//            return ResponseEntity.ok(user.getIssues());
-//        }
+    private User getUser(Principal principal) {
+        String username = principal.getName();
+        return userRepository.findByUsername(username).get();
     }
     
+    @GetMapping("")
+    public ResponseEntity<Iterable<Issue>> getAll(Principal principal) {
+//        return ResponseEntity.ok(issueRepository.findAll());
+        User user = getUser(principal);
+//        User user = authenticatedUser.getUser();
+// Another alternative: JsonIgnore or FetchType.EAGER on OneToMany lists        
+        User.Role role = user.getRole();
+        if (role.equals(User.Role.ROLE_ADMIN)) {
+            return ResponseEntity.ok(issueRepository.findAll());
+        } else {
+            return ResponseEntity.ok(user.getIssues());
+        }
+    }
+    
+    @Secured({ "ROLE_USER" })
     @GetMapping("/{id}")
     public ResponseEntity<Issue> get(@PathVariable Integer id) {
         Optional<Issue> issue = issueRepository.findById(id);
@@ -61,9 +72,9 @@ public class IssueRestController {
     }
     
     @PostMapping("")
-    public ResponseEntity<Issue> post(@RequestBody Issue issue) {
-//        User user = authenticatedUser.getUser();
-//        issue.setUser(user);
+    public ResponseEntity<Issue> post(@RequestBody Issue issue, Principal principal) {
+        User user = getUser(principal);
+        issue.setUser(user);
         Issue savedIssue = issueRepository.save(issue);
         return ResponseEntity.ok(savedIssue);
     }
