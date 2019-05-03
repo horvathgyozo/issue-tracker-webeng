@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -41,10 +42,13 @@ public class MultipleEntryPointsSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/api/**")
-                    .authorizeRequests()
+                .authorizeRequests()
                     .anyRequest().authenticated()
                     .and()
-                    .httpBasic();
+                .httpBasic()
+                    .and()
+                .csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
         }
 
     }
@@ -56,22 +60,22 @@ public class MultipleEntryPointsSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
-                    .authorizeRequests()
+                .authorizeRequests()
                     .antMatchers("/", "/h2/**", "/register").permitAll()
                     .anyRequest().authenticated()
                     .and()
-                    .formLogin()
+                .formLogin()
                     .loginPage("/login")
                     .permitAll()
                     .and()
-                    .logout()
+                .logout()
                     .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/")
                     .and()
-                    .csrf() // important!
+                .csrf() // important!
                     .ignoringAntMatchers("/h2/**")
                     .and()
-                    .headers()
+                .headers()
                     .frameOptions().disable(); // important!
         }
 

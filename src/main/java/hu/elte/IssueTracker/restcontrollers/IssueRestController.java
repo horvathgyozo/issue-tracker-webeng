@@ -60,7 +60,7 @@ public class IssueRestController {
         }
     }
     
-    @Secured({ "ROLE_USER" })
+//    @Secured({ "ROLE_USER" })
     @GetMapping("/{id}")
     public ResponseEntity<Issue> get(@PathVariable Integer id) {
         Optional<Issue> issue = issueRepository.findById(id);
