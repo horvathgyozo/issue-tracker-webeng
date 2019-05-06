@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,48 +38,60 @@ public class MultipleEntryPointsSecurityConfig {
 
     @Configuration
     @Order(1)
-    public static class RestWebSecurityConfig extends WebSecurityConfigurerAdapter {
+    public static class GraphQLSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/api/**")
-                .authorizeRequests()
-                    .anyRequest().authenticated()
-                    .and()
-                .httpBasic()
-                    .and()
-                .csrf()
-                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+            http.antMatcher("/graphql/**")
+                .authorizeRequests().anyRequest().permitAll();
         }
 
     }
     
-    @Configuration
-    @Order(2)
-    public static class ApplWebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/**")
-                .authorizeRequests()
-                    .antMatchers("/", "/h2/**", "/register").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
-                .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                    .and()
-                .logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/")
-                    .and()
-                .csrf() // important!
-                    .ignoringAntMatchers("/h2/**")
-                    .and()
-                .headers()
-                    .frameOptions().disable(); // important!
-        }
-
-    }
+//    @Configuration
+//    @Order(2)
+//    public static class RestWebSecurityConfig extends WebSecurityConfigurerAdapter {
+//
+//        @Override
+//        protected void configure(HttpSecurity http) throws Exception {
+//            http.antMatcher("/api/**")
+//                .authorizeRequests()
+//                    .anyRequest().authenticated()
+//                    .and()
+//                .httpBasic()
+//                    .and()
+//                .csrf()
+//                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+//        }
+//
+//    }
+    
+//    @Configuration
+//    @Order(3)
+//    public static class ApplWebSecurityConfig extends WebSecurityConfigurerAdapter {
+//
+//        @Override
+//        protected void configure(HttpSecurity http) throws Exception {
+//            http.antMatcher("/**")
+//                .authorizeRequests()
+//                    .antMatchers("/", "/h2/**", "/register").permitAll()
+//                    .anyRequest().authenticated()
+//                    .and()
+//                .formLogin()
+//                    .loginPage("/login")
+//                    .permitAll()
+//                    .and()
+//                .logout()
+//                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//                    .logoutSuccessUrl("/")
+//                    .and()
+//                .csrf() // important!
+//                    .ignoringAntMatchers("/h2/**")
+//                    .and()
+//                .headers()
+//                    .frameOptions().disable(); // important!
+//        }
+//
+//    }
     
 }

@@ -1,0 +1,19 @@
+type Query {
+  issueById(id: ID): Issue
+}
+
+type Issue {
+  id: ID
+  title: String
+  description: String
+  place: String
+  status: String
+  date: String
+  user: User
+}
+
+type User {
+  id: ID
+  username: String
+  role: String
+}
