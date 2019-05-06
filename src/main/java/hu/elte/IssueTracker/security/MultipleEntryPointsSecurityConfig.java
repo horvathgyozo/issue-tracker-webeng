@@ -26,9 +26,6 @@ public class MultipleEntryPointsSecurityConfig {
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-//        auth
-//            .inMemoryAuthentication()
-//            .withUser("user").password("$2a$04$YDiv9c./ytEGZQopFfExoOgGlJL6/o0er0K.hiGb5TGKHUL8Ebn..").roles("USER");
     }
 
     @Bean
@@ -42,56 +39,57 @@ public class MultipleEntryPointsSecurityConfig {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            http.antMatcher("/graphql/**")
+            http.antMatcher("/graphql")
+                .csrf().disable()
                 .authorizeRequests().anyRequest().permitAll();
         }
 
     }
     
-//    @Configuration
-//    @Order(2)
-//    public static class RestWebSecurityConfig extends WebSecurityConfigurerAdapter {
-//
-//        @Override
-//        protected void configure(HttpSecurity http) throws Exception {
-//            http.antMatcher("/api/**")
-//                .authorizeRequests()
-//                    .anyRequest().authenticated()
-//                    .and()
-//                .httpBasic()
-//                    .and()
-//                .csrf()
-//                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-//        }
-//
-//    }
+    @Configuration
+    @Order(2)
+    public static class RestWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/api/**")
+                .authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                .httpBasic()
+                    .and()
+                .csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        }
+
+    }
     
-//    @Configuration
-//    @Order(3)
-//    public static class ApplWebSecurityConfig extends WebSecurityConfigurerAdapter {
-//
-//        @Override
-//        protected void configure(HttpSecurity http) throws Exception {
-//            http.antMatcher("/**")
-//                .authorizeRequests()
-//                    .antMatchers("/", "/h2/**", "/register").permitAll()
-//                    .anyRequest().authenticated()
-//                    .and()
-//                .formLogin()
-//                    .loginPage("/login")
-//                    .permitAll()
-//                    .and()
-//                .logout()
-//                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//                    .logoutSuccessUrl("/")
-//                    .and()
-//                .csrf() // important!
-//                    .ignoringAntMatchers("/h2/**")
-//                    .and()
-//                .headers()
-//                    .frameOptions().disable(); // important!
-//        }
-//
-//    }
+    @Configuration
+    @Order(3)
+    public static class ApplWebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/**")
+                .authorizeRequests()
+                    .antMatchers("/", "/h2/**", "/register").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                .formLogin()
+                    .loginPage("/login")
+                    .permitAll()
+                    .and()
+                .logout()
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/")
+                    .and()
+                .csrf() // important!
+                    .ignoringAntMatchers("/h2/**")
+                    .and()
+                .headers()
+                    .frameOptions().disable(); // important!
+        }
+
+    }
     
 }

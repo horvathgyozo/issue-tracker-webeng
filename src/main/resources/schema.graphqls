@@ -1,19 +1,31 @@
 type Query {
-  issueById(id: ID): Issue
+  issueById(id: Int): Issue
+  issues: [Issue]
 }
 
-type Issue {
-  id: ID
+type Mutation {
+  createIssue(issue: IssueInput): Issue
+}
+
+input IssueInput {
   title: String
   description: String
   place: String
   status: String
-  date: String
+}
+
+type Issue {
+  id: Int
+  title: String
+  description: String
+  place: String
+  status: String
+  created_at: String
   user: User
 }
 
 type User {
-  id: ID
+  id: Int
   username: String
   role: String
 }
